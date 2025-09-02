@@ -311,6 +311,7 @@ body {
     padding: 2px;
     background: linear-gradient(135deg, #4ec9b0, #647eff, #9c27b0);
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     opacity: 0;
@@ -911,17 +912,118 @@ pre, code, pre * {
 .btn-danger { background-color: var(--danger); color: white; }
 .btn-danger:disabled { background-color: var(--muted); cursor: not-allowed; }
 
-/* Toast */
-#toast-container { position: fixed; bottom: 1rem; right: 1rem; z-index: 200; display: flex; flex-direction: column; gap: 0.5rem; }
-.toast {
-    background-color: var(--surface); color: var(--text); padding: 0.75rem 1.25rem;
-    border-radius: 6px; box-shadow: var(--shadow); border-left: 4px solid var(--accent);
-    opacity: 0; transform: translateX(100%);
-    transition: opacity 0.5s, transform 0.5s;
+/* Toast Notifications - Modern Design */
+#toast-container {
+    position: fixed;
+    top: 25px;
+    left: 25px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-width: 320px;
+    pointer-events: none;
+    font-family: var(--font-sans);
 }
-.toast.success { border-color: var(--success); }
-.toast.error { border-color: var(--danger); }
-.toast.is-visible { opacity: 1; transform: translateX(0); }
+
+.toast {
+    position: relative;
+    padding: 16px 20px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: white;
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    pointer-events: auto;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+}
+
+.toast::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    z-index: -1;
+    opacity: 0.9;
+}
+
+.toast::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.toast-content {
+    display: flex;
+    align-items: center;
+}
+
+.toast-icon {
+    margin-right: 12px;
+    font-size: 1.3em;
+    flex-shrink: 0;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+}
+
+/* Add a subtle pulse animation on show */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.toast.show {
+    animation: pulse 0.3s ease-out;
+}
+
+/* Add a progress bar at the bottom */
+.toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.7);
+    width: 100%;
+    transform-origin: left;
+    transform: scaleX(1);
+    transition: transform 200ms linear;
+}
+
+/* Add hover effect */
+.toast:hover {
+    transform: translateX(2px);
+    box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Ensure text is readable with white color and subtle text shadow */
+.toast {
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Add a subtle scale effect on hover */
+.toast:hover {
+    transform: translateX(0) scale(1.02);
+}
 
 /* Drag Helper */
 .drag-helper {

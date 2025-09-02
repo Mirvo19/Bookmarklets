@@ -8,8 +8,8 @@
         usage: (slug) => `bookmarklet-usage-${slug}`
     };
 
-    // Set dark theme by default if not set
-    const savedTheme = localStorage.getItem(LOCAL_KEYS.theme) || 'dark';
+    // Set sunset theme by default if not set
+    const savedTheme = localStorage.getItem(LOCAL_KEYS.theme) || 'sunset';
     // Don't set it directly here, let the init function handle it
     // to ensure all theme-related initialization happens in one place
 
@@ -260,6 +260,11 @@
         // --- THEME MANAGEMENT ---
         const THEMES = ['light', 'dark', 'ocean', 'sunset', 'midnight'];
         
+        // Set sunset theme on initial load if no theme is set
+        if (!localStorage.getItem(LOCAL_KEYS.theme)) {
+            setTheme('sunset');
+        }
+        
         function cycleTheme() {
             const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
             const currentIndex = THEMES.indexOf(currentTheme);
@@ -392,33 +397,10 @@
                 if (e.target === codeElement || e.target.closest('.editor__code')) {
                     e.preventDefault();
                     e.stopPropagation();
-                    copyToClipboard(minifyForHref(snippetCode))
+                    const codeToCopy = codeElement.textContent;
+                    copyToClipboard(codeToCopy)
                         .then(() => {
-                            showCopyFeedback('Bookmarklet copied to clipboard!');
-                            updateUsage(slug, { copy: true });
-                            
-                            // Add mini feedback
-                            const feedback = document.createElement('div');
-                            feedback.className = 'copy-feedback-mini';
-                            feedback.textContent = 'Copied!';
-                            document.body.appendChild(feedback);
-                            
-                            // Position near the cursor
-                            const x = e.clientX;
-                            const y = e.clientY - 40;
-                            feedback.style.left = `${x}px`;
-                            feedback.style.top = `${y}px`;
-                            
-                            // Show and then remove feedback
-                            requestAnimationFrame(() => {
-                                feedback.classList.add('show');
-                                setTimeout(() => {
-                                    feedback.classList.remove('show');
-                                    setTimeout(() => {
-                                        if (feedback.parentNode) feedback.remove();
-                                    }, 200);
-                                }, 1000);
-                            });
+                            showCopyFeedback();
                         })
                         .catch(err => {
                             console.error('Failed to copy:', err);
@@ -442,7 +424,7 @@
                 e.stopPropagation();
                 copyToClipboard(minifyForHref(snippetCode))
                     .then(() => {
-                        showCopyFeedback('Bookmarklet copied!');
+                        showCopyFeedback();
                         updateUsage(slug, { copy: true });
                         copyButton.classList.add('pulse');
                         setTimeout(() => copyButton.classList.remove('pulse'), 300);
@@ -465,8 +447,8 @@
                     e.preventDefault();
                     copyToClipboard(minifyForHref(snippetCode))
                         .then(() => {
-                            // First show the main feedback
-                            showCopyFeedback('Bookmarklet copied to clipboard!');
+                            // Show the feedback
+                            showCopyFeedback();
                             updateUsage(slug, { copy: true });
                             
                             // Create and position the mini feedback
@@ -548,8 +530,8 @@
                 copyBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     copyToClipboard(code)
-                        .then(() => showCopyFeedback('Code copied to clipboard!'))
-                        .catch(() => showCopyFeedback('Failed to copy code', 'error'));
+                        .then(() => showCopyFeedback())
+                        .catch(() => showCopyFeedback('Failed to copy to clipboard', 'error'));
                 });
             }
 
@@ -573,39 +555,60 @@
             return modal;
         }
 
-        function showCopyFeedback(message, type = 'success') {
-            // Remove any existing feedback
-            const existingFeedback = document.querySelector('.copy-feedback');
-            if (existingFeedback) {
-                existingFeedback.remove();
-            }
-
-            const feedback = document.createElement('div');
-            feedback.className = `copy-feedback ${type}`;
-            feedback.innerHTML = `
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                </svg>
-                <span>${message}</span>
-            `;
+        function showCopyFeedback(message = 'Bookmarklet copied to clipboard!', type = 'success') {
+            const container = document.getElementById('toast-container');
             
-            document.body.appendChild(feedback);
+            // Remove any existing toasts to prevent stacking
+            container.innerHTML = '';
+            
+            const toast = document.createElement('div');
+            toast.className = `toast`;
+            toast.setAttribute('role', 'alert');
+            toast.setAttribute('aria-live', 'assertive');
+            
+            // Create toast content with icon
+            const icon = document.createElement('div');
+            icon.className = 'toast-icon';
+            icon.innerHTML = '✓';
+            
+            const content = document.createElement('div');
+            content.className = 'toast-content';
+            content.textContent = message;
+            
+            // Create progress bar
+            const progress = document.createElement('div');
+            progress.className = 'toast-progress';
+            
+            // Build toast structure
+            const toastContent = document.createElement('div');
+            toastContent.className = 'toast-content';
+            toastContent.appendChild(icon);
+            toastContent.appendChild(content);
+            
+            toast.appendChild(toastContent);
+            toast.appendChild(progress);
+            
+            container.appendChild(toast);
             
             // Trigger animation
             requestAnimationFrame(() => {
-                feedback.classList.add('visible');
+                toast.classList.add('show');
+                
+                // Animate progress bar
+                setTimeout(() => {
+                    progress.style.transform = 'scaleX(0)';
+                }, 10);
             });
             
-            // Remove after delay
+            // Auto-remove after delay
             setTimeout(() => {
-                feedback.classList.remove('visible');
+                toast.classList.remove('show');
                 setTimeout(() => {
-                    if (feedback.parentNode) {
-                        feedback.remove();
+                    if (toast.parentNode === container) {
+                        container.removeChild(toast);
                     }
                 }, 300);
-            }, 2000);
+            }, 3000);
         }
 
         // --- SNIPPET ACTIONS ---
