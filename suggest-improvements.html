@@ -564,7 +564,7 @@
 
     <script>
         // Theme switcher functionality
-        const THEMES = ['light', 'dark', 'ocean', 'sunset', 'midnight'];
+        const THEMES = ['light', 'dark', 'flamingo', 'ocean', 'sunset', 'midnight'];
         
         function cycleTheme() {
             const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
@@ -822,7 +822,7 @@
         // Initialize everything
         document.addEventListener('DOMContentLoaded', () => {
             // Load saved theme
-            const savedTheme = localStorage.getItem('bookmarklet-theme') || 'dark';
+            const savedTheme = localStorage.getItem('bookmarklet-theme') || 'flamingo';
             setTheme(savedTheme);
             
             // Bind theme switcher
