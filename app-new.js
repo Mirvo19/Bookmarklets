@@ -15,197 +15,432 @@
 
     // --- SNIPPETS DATA ---
     const SNIPPETS = {
-        'editable': {
-            title: 'Editable Toggle',
-            desc: 'Toggle in-place editing of the page body.',
-            code: `javascript:(() => {
-    window.__editableToggleCount = window.__editableToggleCount || 0;
-    const body = document.querySelector('body');
-    body.contentEditable = (window.__editableToggleCount % 2 === 0) ? 'true' : 'false';
-    window.__editableToggleCount++;
-})();`
+        // Development Tools
+        'word-count': {
+            title: 'Word Counter',
+            desc: 'Count words, characters, and paragraphs on any webpage',
+            category: 'Development',
+            code: `javascript:(function(){var t=document.body.innerText||document.body.textContent||'';var w=t.trim().split(/\\s+/).length;var c=t.length;var p=t.split(/\\n\\s*\\n/).length;alert('Words: '+w+'\\nCharacters: '+c+'\\nParagraphs: '+p);})();`,
+            tags: ['text', 'analysis', 'writing']
         },
-        'hitboxes': {
-            title: 'Hitboxes Outline',
-            desc: 'Prompt for a color and outline every element to show hitboxes.',
-            code: `javascript:(() => {
-    const id = 'hbx';
-    const existing = document.getElementById(id);
-    if (existing) { existing.remove(); return; }
-    const color = prompt('Outline color? (e.g. red or #ff0000)');
-    if (!color) return;
-    const style = document.createElement('style');
-    style.id = id;
-    style.textContent = '* { outline: 2px solid ' + color + ' !important; }';
-    document.head.appendChild(style);
-})();`
+        'highlight-links': {
+            title: 'Highlight All Links',
+            desc: 'Highlight all clickable links on the page with a bright border',
+            category: 'Development',
+            code: `javascript:(function(){var links=document.getElementsByTagName('a');for(var i=0;i<links.length;i++){links[i].style.border='3px solid red';links[i].style.backgroundColor='yellow';}})();`,
+            tags: ['links', 'debug', 'navigation']
         },
-        'invert_colors': {
-            title: 'Invert Colors',
-            desc: 'Toggle color inversion while attempting to preserve images and media.',
-            code: `javascript:(() => {
-    const id = 'invert-colors-style';
-    let style = document.getElementById(id);
-    if (style) { style.remove(); return; }
-    style = document.createElement('style'); style.id = id;
-    style.textContent = [
-        'html { filter: invert(1) hue-rotate(180deg); background: black !important; }',
-        'img, video, iframe, picture, svg { filter: invert(1) hue-rotate(180deg) !important; }'
-    ].join('\\n');
-    document.head.appendChild(style);
-})();`
+        'image-alt-text': {
+            title: 'Show Image Alt Text',
+            desc: 'Display alt text for all images on the page',
+            category: 'Development',
+            code: `javascript:(function(){var imgs=document.getElementsByTagName('img');for(var i=0;i<imgs.length;i++){var alt=imgs[i].alt||'(no alt text)';imgs[i].style.border='2px solid blue';imgs[i].title=alt;imgs[i].setAttribute('data-original-title',alt);}alert('Hover over images to see alt text');})();`,
+            tags: ['accessibility', 'images', 'alt-text']
         },
-        'remove_styles': {
-            title: 'Remove All Styles',
-            desc: 'Strip all styling from the current page for better readability.',
-            code: `javascript:(() => {
-    const style = document.createElement('style');
-    style.textContent = '* { all: revert !important; }';
-    document.head.appendChild(style);
-})();`
+        'color-picker': {
+            title: 'Color Picker',
+            desc: 'Click on any element to see its color information',
+            category: 'Development',
+            code: `javascript:(function(){function getColor(el){var style=window.getComputedStyle(el);return{bg:style.backgroundColor,color:style.color,border:style.borderColor};}function showColors(e){e.preventDefault();var colors=getColor(e.target);alert('Background: '+colors.bg+'\\nText: '+colors.color+'\\nBorder: '+colors.border);document.removeEventListener('click',showColors,true);}alert('Click on any element to see its colors');document.addEventListener('click',showColors,true);})();`,
+            tags: ['colors', 'css', 'design']
         },
-        'show_password': {
-            title: 'Show Passwords',
-            desc: 'Toggle password fields to show their contents.',
-            code: `javascript:(() => {
-    const inputs = document.querySelectorAll('input[type=password]');
-    inputs.forEach(input => {
-        input.type = input.type === 'password' ? 'text' : 'password';
-    });
-})();`
+        'page-info': {
+            title: 'Page Information',
+            desc: 'Display detailed information about the current page',
+            category: 'Development',
+            code: `javascript:(function(){var info='Page Info:\\n\\n';info+='Title: '+document.title+'\\n';info+='URL: '+window.location.href+'\\n';info+='Domain: '+window.location.hostname+'\\n';info+='Last Modified: '+document.lastModified+'\\n';info+='Images: '+document.images.length+'\\n';info+='Links: '+document.links.length+'\\n';info+='Forms: '+document.forms.length+'\\n';info+='Scripts: '+document.scripts.length;alert(info);})();`,
+            tags: ['info', 'debug', 'analysis']
         },
-        'find_images': {
-            title: 'Find Large Images',
-            desc: 'Highlight and list all images larger than a specified size.',
-            code: `javascript:(() => {
-    const minSize = prompt('Minimum image size in KB?', '100');
-    if (!minSize) return;
-    const size = parseInt(minSize) * 1024;
-    const images = Array.from(document.images).filter(img => img.naturalWidth * img.naturalHeight > 0);
-    
-    images.forEach(img => {
-        if (img.src && img.naturalWidth * img.naturalHeight > size) {
-            img.style.outline = '4px solid #ff0000';
-            img.style.boxShadow = '0 0 10px #ff0000';
-        }
-    });
-    
-    alert('Found ' + images.length + ' images. Large images are highlighted in red.');
-})();`
+        'view-source': {
+            title: 'View Page Source',
+            desc: 'Open the page source in a new window',
+            category: 'Development',
+            code: `javascript:(function(){window.open('view-source:'+location.href);})();`,
+            tags: ['source', 'html', 'debug']
         },
-        'word_count': {
-            title: 'Word Count',
-            desc: 'Count and display the number of words on the page.',
-            code: `javascript:(() => {
-    const text = document.body.innerText;
-    const wordCount = text.trim().split(/\\s+/).length;
-    alert('Word count: ' + wordCount);
-})();`
+        'outline-elements': {
+            title: 'Outline All Elements',
+            desc: 'Add colored outlines to all HTML elements for layout debugging',
+            category: 'Development',
+            code: `javascript:(function(){var css='*{outline:1px solid red!important;}div{outline-color:blue!important;}span{outline-color:green!important;}p{outline-color:orange!important;}';var style=document.createElement('style');style.innerHTML=css;document.head.appendChild(style);})();`,
+            tags: ['layout', 'debug', 'css']
         },
-        'scroll_to_top': {
+        'responsive-test': {
+            title: 'Responsive Design Test',
+            desc: 'Test common mobile and tablet viewport sizes',
+            category: 'Development',
+            code: `javascript:(function(){var sizes=[{name:'iPhone',w:375,h:667},{name:'iPad',w:768,h:1024},{name:'Desktop',w:1200,h:800}];var current=0;function resize(){var size=sizes[current];window.resizeTo(size.w,size.h);alert('Viewport: '+size.name+' ('+size.w+'x'+size.h+')');current=(current+1)%sizes.length;}resize();})();`,
+            tags: ['responsive', 'mobile', 'testing']
+        },
+        'console-clear': {
+            title: 'Clear Console',
+            desc: 'Clear the browser console and show a success message',
+            category: 'Development',
+            code: `javascript:(function(){console.clear();console.log('%cConsole cleared! 🧹','color:green;font-size:16px;font-weight:bold;');alert('Console cleared successfully!');})();`,
+            tags: ['console', 'debug', 'clean']
+        },
+        'find-broken-images': {
+            title: 'Find Broken Images',
+            desc: 'Highlight all broken images on the page',
+            category: 'Development',
+            code: `javascript:(function(){var imgs=document.getElementsByTagName('img');var broken=0;for(var i=0;i<imgs.length;i++){if(!imgs[i].complete||imgs[i].naturalWidth===0){imgs[i].style.border='3px solid red';imgs[i].style.backgroundColor='pink';broken++;}}alert('Found '+broken+' broken images (highlighted in red)');})();`,
+            tags: ['images', 'debug', 'broken']
+        },
+
+        // Productivity Tools
+        'extract-emails': {
+            title: 'Extract Emails',
+            desc: 'Find and display all email addresses on the current page',
+            category: 'Productivity',
+            code: `javascript:(function(){var emails=document.body.innerHTML.match(/[\\w\\.-]+@[\\w\\.-]+\\.[a-zA-Z]{2,}/g);if(emails){var unique=[...new Set(emails)];prompt('Found '+unique.length+' unique emails (copy with Ctrl+C):',unique.join('\\n'));}else{alert('No emails found');}})();`,
+            tags: ['email', 'extract', 'contact']
+        },
+        'extract-phone': {
+            title: 'Extract Phone Numbers',
+            desc: 'Find and display all phone numbers on the page',
+            category: 'Productivity',
+            code: `javascript:(function(){var phones=document.body.innerHTML.match(/\\b\\d{3}[-.]?\\d{3}[-.]?\\d{4}\\b|\\(\\d{3}\\)\\s?\\d{3}[-.]?\\d{4}/g);if(phones){var unique=[...new Set(phones)];prompt('Found '+unique.length+' phone numbers (copy with Ctrl+C):',unique.join('\\n'));}else{alert('No phone numbers found');}})();`,
+            tags: ['phone', 'extract', 'contact']
+        },
+        'qr-generator': {
+            title: 'QR Code Generator',
+            desc: 'Generate a QR code for the current page URL',
+            category: 'Productivity',
+            code: `javascript:(function(){var url=encodeURIComponent(window.location.href);window.open('https://api.qrserver.com/v1/create-qr-code/?size=300x300&data='+url,'_blank');})();`,
+            tags: ['qr', 'share', 'mobile']
+        },
+        'print-clean': {
+            title: 'Print Clean',
+            desc: 'Remove ads and unnecessary elements before printing',
+            category: 'Productivity',
+            code: `javascript:(function(){var elements=document.querySelectorAll('header,nav,aside,footer,.sidebar,.ads,.advertisement,.social,.comments');for(var i=0;i<elements.length;i++){elements[i].style.display='none';}window.print();})();`,
+            tags: ['print', 'clean', 'remove']
+        },
+        'save-as-pdf': {
+            title: 'Save as PDF',
+            desc: 'Open the browser print dialog optimized for PDF saving',
+            category: 'Productivity',
+            code: `javascript:(function(){var css='@media print{*{-webkit-print-color-adjust:exact!important;color-adjust:exact!important;}}';var style=document.createElement('style');style.innerHTML=css;document.head.appendChild(style);window.print();})();`,
+            tags: ['pdf', 'save', 'print']
+        },
+        'copy-url': {
+            title: 'Copy Current URL',
+            desc: 'Copy the current page URL to clipboard',
+            category: 'Productivity',
+            code: `javascript:(function(){navigator.clipboard.writeText(window.location.href).then(function(){alert('URL copied to clipboard!');}).catch(function(){prompt('Copy this URL:',window.location.href);});})();`,
+            tags: ['url', 'copy', 'clipboard']
+        },
+        'word-replace': {
+            title: 'Find & Replace Text',
+            desc: 'Find and replace text on the current page',
+            category: 'Productivity',
+            code: `javascript:(function(){var find=prompt('Find text:');if(find){var replace=prompt('Replace with:');if(replace!==null){var regex=new RegExp(find,'gi');document.body.innerHTML=document.body.innerHTML.replace(regex,replace);alert('Replaced all instances of "'+find+'" with "'+replace+'"');}}})();`,
+            tags: ['text', 'replace', 'edit']
+        },
+        'timer': {
+            title: 'Page Timer',
+            desc: 'Start a timer to track time spent on the page',
+            category: 'Productivity',
+            code: `javascript:(function(){if(window.pageTimer){clearInterval(window.pageTimer);delete window.pageTimer;alert('Timer stopped!');}else{var start=Date.now();window.pageTimer=setInterval(function(){var elapsed=Math.floor((Date.now()-start)/1000);document.title='['+Math.floor(elapsed/60)+':'+String(elapsed%60).padStart(2,'0')+'] '+document.title.replace(/^\\[\\d+:\\d+\\] /,'');},1000);alert('Timer started! Check the page title.');}})();`,
+            tags: ['timer', 'productivity', 'tracking']
+        },
+
+        // Reading Tools
+        'reading-mode': {
+            title: 'Reading Mode',
+            desc: 'Strip away distractions and focus on the main content',
+            category: 'Reading',
+            code: `javascript:(function(){var d=document;var s=d.createElement('style');s.innerHTML='*{background:white!important;color:black!important;font-family:Georgia,serif!important;line-height:1.6!important;}img,video{max-width:100%!important;}';d.head.appendChild(s);var els=d.querySelectorAll('header,nav,aside,footer,.sidebar,.ads,.social');for(var i=0;i<els.length;i++){els[i].style.display='none';}})();`,
+            tags: ['reading', 'focus', 'clean']
+        },
+        'font-size-toggle': {
+            title: 'Font Size Toggle',
+            desc: 'Increase font size for better readability',
+            category: 'Reading',
+            code: `javascript:(function(){var currentSize=window.fontSize||16;var newSize=currentSize>=24?16:currentSize+4;document.body.style.fontSize=newSize+'px';window.fontSize=newSize;alert('Font size: '+newSize+'px');})();`,
+            tags: ['font', 'accessibility', 'reading']
+        },
+        'dark-mode': {
+            title: 'Dark Mode Toggle',
+            desc: 'Toggle dark mode for any website',
+            category: 'Reading',
+            code: `javascript:(function(){if(document.body.style.filter==='invert(1) hue-rotate(180deg)'){document.body.style.filter='';document.body.style.background='';}else{document.body.style.filter='invert(1) hue-rotate(180deg)';document.body.style.background='#111';}})();`,
+            tags: ['dark', 'theme', 'invert']
+        },
+        'reading-time': {
+            title: 'Reading Time Calculator',
+            desc: 'Calculate estimated reading time for the page content',
+            category: 'Reading',
+            code: `javascript:(function(){var text=document.body.innerText||document.body.textContent||'';var words=text.trim().split(/\\s+/).length;var minutes=Math.ceil(words/200);alert('Estimated reading time: '+minutes+' minute'+(minutes!==1?'s':'')+' ('+words+' words)');})();`,
+            tags: ['reading', 'time', 'estimate']
+        },
+        'text-to-speech': {
+            title: 'Text to Speech',
+            desc: 'Read the page content aloud using browser speech synthesis',
+            category: 'Reading',
+            code: `javascript:(function(){if(window.speechSynthesis.speaking){window.speechSynthesis.cancel();alert('Speech stopped');}else{var text=document.body.innerText||document.body.textContent||'';if(text.length>500)text=text.substring(0,500)+'...';var utterance=new SpeechSynthesisUtterance(text);window.speechSynthesis.speak(utterance);alert('Reading page content...');}})();`,
+            tags: ['speech', 'audio', 'accessibility']
+        },
+
+        // Social Media & Sharing
+        'social-share': {
+            title: 'Quick Share',
+            desc: 'Open sharing options for the current page',
+            category: 'Social Media',
+            code: `javascript:(function(){var url=encodeURIComponent(window.location.href);var title=encodeURIComponent(document.title);var twitter='https://twitter.com/intent/tweet?url='+url+'&text='+title;var facebook='https://www.facebook.com/sharer/sharer.php?u='+url;var linkedin='https://www.linkedin.com/sharing/share-offsite/?url='+url;if(navigator.share){navigator.share({title:document.title,url:window.location.href});}else{var choice=prompt('Choose sharing option:\\n1. Twitter\\n2. Facebook\\n3. LinkedIn\\n4. Copy URL\\n\\nEnter number (1-4):');if(choice==='1')window.open(twitter);else if(choice==='2')window.open(facebook);else if(choice==='3')window.open(linkedin);else if(choice==='4')navigator.clipboard.writeText(window.location.href).then(()=>alert('URL copied!'));}})();`,
+            tags: ['sharing', 'social', 'url']
+        },
+        'tweet-page': {
+            title: 'Tweet This Page',
+            desc: 'Quickly tweet the current page with title and URL',
+            category: 'Social Media',
+            code: `javascript:(function(){var url=encodeURIComponent(window.location.href);var title=encodeURIComponent(document.title);window.open('https://twitter.com/intent/tweet?text='+title+'&url='+url,'_blank');})();`,
+            tags: ['twitter', 'tweet', 'share']
+        },
+        'linkedin-share': {
+            title: 'Share on LinkedIn',
+            desc: 'Share the current page on LinkedIn',
+            category: 'Social Media',
+            code: `javascript:(function(){var url=encodeURIComponent(window.location.href);window.open('https://www.linkedin.com/sharing/share-offsite/?url='+url,'_blank');})();`,
+            tags: ['linkedin', 'professional', 'share']
+        },
+        'reddit-submit': {
+            title: 'Submit to Reddit',
+            desc: 'Submit the current page to Reddit',
+            category: 'Social Media',
+            code: `javascript:(function(){var url=encodeURIComponent(window.location.href);var title=encodeURIComponent(document.title);window.open('https://www.reddit.com/submit?url='+url+'&title='+title,'_blank');})();`,
+            tags: ['reddit', 'submit', 'community']
+        },
+
+        // Utilities
+        'password-reveal': {
+            title: 'Password Revealer',
+            desc: 'Show hidden passwords in password fields',
+            category: 'Utilities',
+            code: `javascript:(function(){var inputs=document.querySelectorAll('input[type="password"]');for(var i=0;i<inputs.length;i++){inputs[i].type='text';}alert('All passwords revealed!');})();`,
+            tags: ['password', 'form', 'debug']
+        },
+        'translate-page': {
+            title: 'Translate Page',
+            desc: 'Open Google Translate for the current page',
+            category: 'Utilities',
+            code: `javascript:(function(){window.open('https://translate.google.com/translate?sl=auto&tl=en&u='+encodeURIComponent(window.location.href),'_blank');})();`,
+            tags: ['translate', 'language', 'google']
+        },
+        'scroll-to-top': {
             title: 'Scroll to Top',
-            desc: 'Smoothly scroll to the top of the page.',
-            code: `javascript:(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-})();`
+            desc: 'Smoothly scroll to the top of the page',
+            category: 'Utilities',
+            code: `javascript:(function(){window.scrollTo({top:0,behavior:'smooth'});})();`,
+            tags: ['scroll', 'navigation', 'top']
         },
-        'table_to_csv': {
-            title: 'Table to CSV',
-            desc: 'Convert HTML tables to CSV format that can be copied to clipboard.',
-            code: `javascript:(() => {
-    const tables = document.querySelectorAll('table');
-    if (tables.length === 0) {
-        alert('No tables found on this page.');
-        return;
-    }
-    
-    let csvContent = '';
-    tables.forEach((table, index) => {
-        const rows = table.querySelectorAll('tr');
-        const csv = [];
-        
-        rows.forEach(row => {
-            const rowData = [];
-            const cells = row.querySelectorAll('th, td');
-            
-            cells.forEach(cell => {
-                rowData.push('"' + cell.innerText.replace(/"/g, '""') + '"');
-            });
-            
-            csv.push(rowData.join(','));
-        });
-        
-        csvContent += 'Table ' + (index + 1) + ':\\n' + csv.join('\\n') + '\\n\\n';
-    });
-    
-    navigator.clipboard.writeText(csvContent).then(() => {
-        alert('Table(s) copied as CSV to clipboard!');
-    }).catch(() => {
-        prompt('Copy the following CSV:', csvContent);
-    });
-})();`
+        'scroll-to-bottom': {
+            title: 'Scroll to Bottom',
+            desc: 'Smoothly scroll to the bottom of the page',
+            category: 'Utilities',
+            code: `javascript:(function(){window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});})();`,
+            tags: ['scroll', 'navigation', 'bottom']
         },
-        'clear_storage': {
-            title: 'Clear Storage',
-            desc: 'Clear localStorage and sessionStorage for the current domain.',
-            code: `javascript:(() => {
-    if (confirm('Clear all local and session storage for this domain?')) {
-        localStorage.clear();
-        sessionStorage.clear();
-        alert('Storage cleared!');
-    }
-})();`
+        'auto-scroll': {
+            title: 'Auto Scroll',
+            desc: 'Automatically scroll the page at a steady pace',
+            category: 'Utilities',
+            code: `javascript:(function(){if(window.autoScroller){clearInterval(window.autoScroller);delete window.autoScroller;alert('Auto scroll stopped');}else{window.autoScroller=setInterval(function(){window.scrollBy(0,1);},50);alert('Auto scroll started (run again to stop)');}})();`,
+            tags: ['scroll', 'auto', 'reading']
         },
-        'view_source': {
-            title: 'View Source',
-            desc: 'View the page source in a new tab.',
-            code: `javascript:(() => {
-    const source = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Source: ' + 
-                  location.href + '</title><style>body{font-family:monospace;white-space:pre;margin:20px;}</style></head><body>' + 
-                  document.documentElement.outerHTML.replace(/</g, '&lt;').replace(/>/g, '&gt;') + 
-                  '</body></html>';
-    const win = window.open('about:blank', '_blank');
-    win.document.write(source);
-})();`
+        'remove-ads': {
+            title: 'Ad Blocker',
+            desc: 'Remove common advertisement elements from the page',
+            category: 'Utilities',
+            code: `javascript:(function(){var selectors=['.ad','.ads','[id*="ad"]','[class*="ad"]','.advertisement','.banner','.popup','.modal','iframe[src*="ads"]','iframe[src*="doubleclick"]'];selectors.forEach(function(sel){var els=document.querySelectorAll(sel);for(var i=0;i<els.length;i++){els[i].style.display='none';}});alert('Ads removed!');})();`,
+            tags: ['ads', 'block', 'clean']
         },
-        'dark_mode': {
-            title: 'Dark Mode',
-            desc: 'Toggle dark mode for the current page.',
-            code: `javascript:(() => {
-    const style = document.createElement('style');
-    style.id = 'dark-mode-style';
-    style.textContent = 'html { filter: invert(1) hue-rotate(180deg) !important; background: #000 !important; } ' +
-                       'img, video, iframe, svg { filter: invert(1) hue-rotate(180deg) !important; }';
-    
-    const existing = document.getElementById('dark-mode-style');
-    if (existing) {
-        existing.remove();
-    } else {
-        document.head.appendChild(style);
-    }
-})();`
+        'cookie-notice': {
+            title: 'Remove Cookie Notices',
+            desc: 'Remove annoying cookie consent banners',
+            category: 'Utilities',
+            code: `javascript:(function(){var selectors=['.cookie','.gdpr','[id*="cookie"]','[class*="cookie"]','[id*="consent"]','[class*="consent"]','.privacy-notice'];selectors.forEach(function(sel){var els=document.querySelectorAll(sel);for(var i=0;i<els.length;i++){els[i].style.display='none';}});alert('Cookie notices removed!');})();`,
+            tags: ['cookies', 'gdpr', 'privacy']
         },
-        'remove_overlays': {
-            title: 'Remove Overlays',
-            desc: 'Remove popups, modals, and overlays that block content.',
-            code: `javascript:(() => {
-    const selectors = [
-        '.overlay', '.modal', '.popup', '.lightbox',
-        '[class*="overlay"]', '[class*="modal"]',
-        '[class*="popup"]', '[class*="lightbox"]',
-        '.ReactModal__Overlay', '.fancybox-overlay'
-    ];
-    
-    selectors.forEach(selector => {
-        document.querySelectorAll(selector).forEach(el => {
-            el.style.display = 'none';
-            el.remove();
-        });
-    });
-    
-    document.body.style.overflow = 'auto';
-    document.body.style.position = 'static';
-})();`
+        'wayback-machine': {
+            title: 'Wayback Machine',
+            desc: 'View the current page in the Internet Archive',
+            category: 'Utilities',
+            code: `javascript:(function(){window.open('https://web.archive.org/web/*/'+window.location.href,'_blank');})();`,
+            tags: ['archive', 'history', 'wayback']
+        },
+        'page-speed': {
+            title: 'Page Speed Test',
+            desc: 'Test page speed with Google PageSpeed Insights',
+            category: 'Utilities',
+            code: `javascript:(function(){window.open('https://pagespeed.web.dev/report?url='+encodeURIComponent(window.location.href),'_blank');})();`,
+            tags: ['speed', 'performance', 'google']
+        },
+        'whois-lookup': {
+            title: 'WHOIS Lookup',
+            desc: 'Look up domain information for the current site',
+            category: 'Utilities',
+            code: `javascript:(function(){var domain=window.location.hostname;window.open('https://whois.net/'+domain,'_blank');})();`,
+            tags: ['whois', 'domain', 'info']
+        },
+
+        // Visual & Design
+        'rainbow-text': {
+            title: 'Rainbow Text',
+            desc: 'Make all text on the page rainbow colored',
+            category: 'Visual',
+            code: `javascript:(function(){var elements=document.querySelectorAll('*');var colors=['red','orange','yellow','green','blue','indigo','violet'];for(var i=0;i<elements.length;i++){if(elements[i].innerText&&elements[i].children.length===0){elements[i].style.color=colors[i%colors.length];}}})();`,
+            tags: ['rainbow', 'color', 'fun']
+        },
+        'grayscale': {
+            title: 'Grayscale Mode',
+            desc: 'Convert the entire page to grayscale',
+            category: 'Visual',
+            code: `javascript:(function(){if(document.body.style.filter==='grayscale(100%)'){document.body.style.filter='';}else{document.body.style.filter='grayscale(100%)';}})();`,
+            tags: ['grayscale', 'filter', 'visual']
+        },
+        'blur-images': {
+            title: 'Blur All Images',
+            desc: 'Blur all images on the page (toggle on/off)',
+            category: 'Visual',
+            code: `javascript:(function(){var imgs=document.getElementsByTagName('img');var isBlurred=imgs[0]&&imgs[0].style.filter==='blur(10px)';for(var i=0;i<imgs.length;i++){imgs[i].style.filter=isBlurred?'':'blur(10px)';}alert(isBlurred?'Images unblurred':'Images blurred');})();`,
+            tags: ['blur', 'images', 'privacy']
+        },
+        'zoom-page': {
+            title: 'Zoom Page',
+            desc: 'Zoom the page in or out',
+            category: 'Visual',
+            code: `javascript:(function(){var currentZoom=window.zoomLevel||100;var newZoom=currentZoom>=150?100:currentZoom+25;document.body.style.zoom=newZoom+'%';window.zoomLevel=newZoom;alert('Zoom: '+newZoom+'%');})();`,
+            tags: ['zoom', 'scale', 'accessibility']
+        },
+        'night-mode': {
+            title: 'Night Mode',
+            desc: 'Apply a warm, eye-friendly filter for night reading',
+            category: 'Visual',
+            code: `javascript:(function(){if(document.body.style.filter.includes('sepia')){document.body.style.filter='';}else{document.body.style.filter='sepia(100%) saturate(90%) hue-rotate(315deg) brightness(0.8)';}})();`,
+            tags: ['night', 'sepia', 'eyes']
+        },
+
+        // Security & Privacy
+        'clear-cookies': {
+            title: 'Clear Site Cookies',
+            desc: 'Clear all cookies for the current domain',
+            category: 'Security',
+            code: `javascript:(function(){var cookies=document.cookie.split(';');for(var i=0;i<cookies.length;i++){var cookie=cookies[i];var eqPos=cookie.indexOf('=');var name=eqPos>-1?cookie.substr(0,eqPos).trim():cookie.trim();document.cookie=name+'=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';}alert('Cookies cleared for '+window.location.hostname);})();`,
+            tags: ['cookies', 'privacy', 'clear']
+        },
+        'show-passwords': {
+            title: 'Show All Passwords',
+            desc: 'Reveal all password fields on the page',
+            category: 'Security',
+            code: `javascript:(function(){var inputs=document.querySelectorAll('input[type="password"]');var count=0;for(var i=0;i<inputs.length;i++){inputs[i].type='text';count++;}alert('Revealed '+count+' password fields');})();`,
+            tags: ['password', 'reveal', 'form']
+        },
+        'ssl-check': {
+            title: 'SSL Certificate Info',
+            desc: 'Check if the current page is using HTTPS',
+            category: 'Security',
+            code: `javascript:(function(){var protocol=window.location.protocol;var isSecure=protocol==='https:';var message=isSecure?'✅ This page is secure (HTTPS)':'⚠️ This page is NOT secure (HTTP)';alert(message+'\\n\\nProtocol: '+protocol+'\\nDomain: '+window.location.hostname);})();`,
+            tags: ['ssl', 'https', 'security']
+        },
+
+        // Fun & Entertainment
+        'konami-code': {
+            title: 'Konami Code',
+            desc: 'Add the famous Konami code easter egg to any page',
+            category: 'Fun',
+            code: `javascript:(function(){var keys=[];var konami=[38,38,40,40,37,39,37,39,66,65];document.addEventListener('keydown',function(e){keys.push(e.keyCode);if(keys.length>konami.length)keys.shift();if(keys.join(',')==konami.join(',')){alert('🎉 KONAMI CODE ACTIVATED! 🎉');document.body.style.transform='rotate(360deg)';document.body.style.transition='transform 2s';}});alert('Konami code listener added! Try: ↑↑↓↓←→←→BA');})();`,
+            tags: ['konami', 'easter-egg', 'game']
+        },
+        'snow-effect': {
+            title: 'Snow Effect',
+            desc: 'Add falling snow animation to any webpage',
+            category: 'Fun',
+            code: `javascript:(function(){if(document.getElementById('snow-style')){document.getElementById('snow-style').remove();var flakes=document.querySelectorAll('.snowflake');for(var i=0;i<flakes.length;i++)flakes[i].remove();return;}var css='@keyframes snow{0%{transform:translateY(-100vh) rotate(0deg);}100%{transform:translateY(100vh) rotate(360deg);}}.snowflake{position:fixed;top:-10px;color:white;user-select:none;pointer-events:none;animation:snow 10s linear infinite;z-index:9999;}';var style=document.createElement('style');style.id='snow-style';style.innerHTML=css;document.head.appendChild(style);for(var i=0;i<50;i++){var flake=document.createElement('div');flake.className='snowflake';flake.innerHTML='❄';flake.style.left=Math.random()*100+'%';flake.style.animationDelay=Math.random()*10+'s';flake.style.fontSize=Math.random()*20+10+'px';document.body.appendChild(flake);}})();`,
+            tags: ['snow', 'animation', 'winter']
+        },
+        'matrix-rain': {
+            title: 'Matrix Rain',
+            desc: 'Add Matrix-style falling characters effect',
+            category: 'Fun',
+            code: `javascript:(function(){if(document.getElementById('matrix-canvas')){document.getElementById('matrix-canvas').remove();return;}var canvas=document.createElement('canvas');canvas.id='matrix-canvas';canvas.style.position='fixed';canvas.style.top='0';canvas.style.left='0';canvas.style.width='100%';canvas.style.height='100%';canvas.style.zIndex='9999';canvas.style.pointerEvents='none';canvas.style.background='rgba(0,0,0,0.8)';document.body.appendChild(canvas);var ctx=canvas.getContext('2d');canvas.width=window.innerWidth;canvas.height=window.innerHeight;var chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';var drops=[];for(var i=0;i<canvas.width/20;i++)drops[i]=1;function draw(){ctx.fillStyle='rgba(0,0,0,0.05)';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#0F0';ctx.font='20px monospace';for(var i=0;i<drops.length;i++){var text=chars[Math.floor(Math.random()*chars.length)];ctx.fillText(text,i*20,drops[i]*20);if(drops[i]*20>canvas.height&&Math.random()>0.975)drops[i]=0;drops[i]++;}}setInterval(draw,50);})();`,
+            tags: ['matrix', 'animation', 'effect']
+        },
+        'disco-mode': {
+            title: 'Disco Mode',
+            desc: 'Make the page background flash rainbow colors',
+            category: 'Fun',
+            code: `javascript:(function(){if(window.discoMode){clearInterval(window.discoMode);delete window.discoMode;document.body.style.backgroundColor='';alert('Disco mode OFF');}else{var colors=['red','orange','yellow','green','blue','indigo','violet'];var i=0;window.discoMode=setInterval(function(){document.body.style.backgroundColor=colors[i%colors.length];i++;},200);alert('Disco mode ON! (run again to stop)');}})();`,
+            tags: ['disco', 'colors', 'party']
+        },
+
+        // Image & Media
+        'download-images': {
+            title: 'Download All Images',
+            desc: 'Open all images on the page in new tabs for downloading',
+            category: 'Media',
+            code: `javascript:(function(){var imgs=document.getElementsByTagName('img');var count=0;for(var i=0;i<imgs.length;i++){if(imgs[i].src&&!imgs[i].src.startsWith('data:')){window.open(imgs[i].src,'_blank');count++;}}alert('Opened '+count+' images in new tabs');})();`,
+            tags: ['images', 'download', 'media']
+        },
+        'image-gallery': {
+            title: 'Image Gallery View',
+            desc: 'View all images on the page in a gallery format',
+            category: 'Media',
+            code: `javascript:(function(){var imgs=document.getElementsByTagName('img');var gallery='<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:99999;overflow:auto;padding:20px;"><h2 style="color:white;text-align:center;">Image Gallery (Click to close)</h2>';for(var i=0;i<imgs.length;i++){if(imgs[i].src)gallery+='<img src="'+imgs[i].src+'" style="max-width:300px;margin:10px;border:2px solid white;">';}gallery+='</div>';var div=document.createElement('div');div.innerHTML=gallery;div.onclick=function(){document.body.removeChild(div);};document.body.appendChild(div);})();`,
+            tags: ['gallery', 'images', 'view']
+        },
+        'video-controls': {
+            title: 'Video Speed Control',
+            desc: 'Add speed controls to all videos on the page',
+            category: 'Media',
+            code: `javascript:(function(){var videos=document.getElementsByTagName('video');for(var i=0;i<videos.length;i++){var v=videos[i];var controls=document.createElement('div');controls.innerHTML='<button onclick="this.parentNode.previousSibling.playbackRate=0.5">0.5x</button><button onclick="this.parentNode.previousSibling.playbackRate=1">1x</button><button onclick="this.parentNode.previousSibling.playbackRate=1.5">1.5x</button><button onclick="this.parentNode.previousSibling.playbackRate=2">2x</button>';controls.style.cssText='margin:5px 0;';v.parentNode.insertBefore(controls,v.nextSibling);}alert('Speed controls added to '+videos.length+' videos');})();`,
+            tags: ['video', 'speed', 'controls']
+        },
+
+        // Analytics & SEO
+        'meta-tags': {
+            title: 'View Meta Tags',
+            desc: 'Display all meta tags and their content',
+            category: 'SEO',
+            code: `javascript:(function(){var metas=document.getElementsByTagName('meta');var info='Meta Tags:\\n\\n';for(var i=0;i<metas.length;i++){var name=metas[i].name||metas[i].property||metas[i].httpEquiv||'unnamed';var content=metas[i].content||'(no content)';info+=name+': '+content+'\\n';}alert(info);})();`,
+            tags: ['meta', 'seo', 'tags']
+        },
+        'heading-structure': {
+            title: 'Heading Structure',
+            desc: 'Show the heading hierarchy (H1-H6) of the page',
+            category: 'SEO',
+            code: `javascript:(function(){var headings=document.querySelectorAll('h1,h2,h3,h4,h5,h6');var structure='Heading Structure:\\n\\n';for(var i=0;i<headings.length;i++){var level=headings[i].tagName;var text=headings[i].innerText.substring(0,50);structure+=level+': '+text+'\\n';}if(structure.length>20)alert(structure);else alert('No headings found on this page');})();`,
+            tags: ['headings', 'structure', 'seo']
+        },
+        'check-alt-tags': {
+            title: 'Check Alt Tags',
+            desc: 'Find images missing alt attributes for SEO',
+            category: 'SEO',
+            code: `javascript:(function(){var imgs=document.getElementsByTagName('img');var missing=0;var total=imgs.length;for(var i=0;i<imgs.length;i++){if(!imgs[i].alt||imgs[i].alt.trim()===''){imgs[i].style.border='3px solid red';missing++;}}alert('Images: '+total+'\\nMissing alt text: '+missing+'\\n\\n'+(missing>0?'Images missing alt text are highlighted in red':'All images have alt text!'));})();`,
+            tags: ['alt', 'seo', 'accessibility']
+        },
+
+        // Form Tools
+        'fill-forms': {
+            title: 'Auto Fill Forms',
+            desc: 'Fill all form fields with placeholder text',
+            category: 'Forms',
+            code: `javascript:(function(){var inputs=document.querySelectorAll('input[type="text"],input[type="email"],textarea');for(var i=0;i<inputs.length;i++){var input=inputs[i];if(input.type==='email')input.value='test@example.com';else if(input.name&&input.name.toLowerCase().includes('name'))input.value='John Doe';else input.value='Sample text';}alert('Forms filled with sample data');})();`,
+            tags: ['forms', 'fill', 'testing']
+        },
+        'form-data': {
+            title: 'Extract Form Data',
+            desc: 'Show all form data on the page',
+            category: 'Forms',
+            code: `javascript:(function(){var forms=document.getElementsByTagName('form');var data='Form Data:\\n\\n';for(var f=0;f<forms.length;f++){data+='Form '+(f+1)+':\\n';var elements=forms[f].elements;for(var i=0;i<elements.length;i++){var el=elements[i];if(el.name&&el.value)data+=el.name+': '+el.value+'\\n';}data+='\\n';}if(data.length>15)alert(data);else alert('No form data found');})();`,
+            tags: ['forms', 'data', 'extract']
+        },
+        'clear-forms': {
+            title: 'Clear All Forms',
+            desc: 'Clear all form inputs on the page',
+            category: 'Forms',
+            code: `javascript:(function(){var inputs=document.querySelectorAll('input,textarea,select');var count=0;for(var i=0;i<inputs.length;i++){if(inputs[i].type!=='submit'&&inputs[i].type!=='button'){inputs[i].value='';count++;}}alert('Cleared '+count+' form fields');})();`,
+            tags: ['forms', 'clear', 'reset']
         }
     };
 
@@ -397,7 +632,8 @@
                 if (e.target === codeElement || e.target.closest('.editor__code')) {
                     e.preventDefault();
                     e.stopPropagation();
-                    const codeToCopy = codeElement.textContent;
+                    // Copy the original code, not the displayed HTML
+                    const codeToCopy = minifyForHref(snippetCode);
                     copyToClipboard(codeToCopy)
                         .then(() => {
                             showCopyFeedback();
@@ -650,13 +886,13 @@
     }
 
     function minifyForHref(code) {
-        return 'javascript:' + code
-            .replace(/^javascript:/, '')
-            .replace(/\/\*[\s\S]*?\*\//g, '')
-            .replace(/\/\/.*$/gm, '')
-            .replace(/\s+/g, ' ')
-            .replace(/\s*([{}()\[\]=+\-*\/%<>!&|?:;,.])\s*/g, '$1')
-            .trim();
+        // Ensure the code starts with javascript:
+        if (!code.startsWith('javascript:')) {
+            code = 'javascript:' + code;
+        }
+        
+        // Return the code as-is since it's already properly formatted
+        return code;
     }
 
     function copyToClipboard(text) {

@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suggest Improvements - Bookmarklet Collection</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .suggestion-section {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .suggestion-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .suggestion-section h2 {
+            color: var(--accent);
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--muted);
+            border-radius: 8px;
+            background: var(--surface);
+            color: var(--text);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+            font-family: inherit;
+        }
+
+        .submit-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .submit-btn:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .category-card {
+            background: var(--surface);
+            border: 2px solid var(--muted);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .category-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.1);
+        }
+
+        .category-card.selected {
+            border-color: var(--accent);
+            background: rgba(var(--accent-rgb), 0.05);
+        }
+
+        .category-card h3 {
+            color: var(--accent);
+            margin-top: 0;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .category-card .icon {
+            font-size: 1.5rem;
+        }
+
+        .category-card p {
+            color: var(--muted);
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .category-card input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            transform: translateX(-5px);
+        }
+
+        .back-link svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        
+        .contact-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .contact-card {
+            background: var(--surface);
+            border: 1px solid var(--muted);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .contact-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .contact-card .icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+
+        .contact-card h3 {
+            margin: 0 0 0.5rem 0;
+            color: var(--text);
+        }
+
+        .contact-card p {
+            margin: 0 0 1rem 0;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .contact-card a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .contact-card a:hover {
+            text-decoration: underline;
+        }
+
+        .success-message {
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid #4caf50;
+            color: #4caf50;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .feature-request-examples {
+            background: var(--surface);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .feature-request-examples h4 {
+            color: var(--accent);
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        .feature-request-examples ul {
+            margin: 0;
+            padding-left: 1.5rem;
+        }
+
+        .feature-request-examples li {
+            margin-bottom: 0.5rem;
+            color: var(--muted);
+        }
+
+        .theme-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .theme-label {
+            font-size: 0.9rem;
+            color: var(--muted);
+            font-weight: 500;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .suggestion-section {
+                padding: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .suggestion-section h2 {
+                font-size: 1.3rem;
+            }
+
+            .category-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+                margin: 1.5rem 0;
+            }
+
+            .category-card {
+                padding: 1rem;
+            }
+
+            .category-card h3 {
+                font-size: 1rem;
+            }
+
+            .category-card .icon {
+                font-size: 1.2rem;
+            }
+
+            .form-group input,
+            .form-group textarea {
+                padding: 0.75rem;
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+
+            .submit-btn {
+                width: 100%;
+                padding: 1rem;
+                font-size: 1rem;
+            }
+
+            .feature-request-examples {
+                padding: 1rem;
+            }
+
+            .back-link {
+                margin-bottom: 1.5rem;
+            }
+
+            .container {
+                padding: 0 1rem;
+            }
+
+            .header-controls {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+
+            .header-nav {
+                justify-content: center;
+                order: 2;
+            }
+
+            .theme-controls {
+                justify-content: center;
+                order: 1;
+            }
+
+            .site-header h1 {
+                font-size: 1.5rem;
+                text-align: center;
+                margin-bottom: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .suggestion-section {
+                padding: 1rem;
+            }
+
+            .category-card {
+                padding: 0.75rem;
+            }
+
+            .form-group {
+                margin-bottom: 1rem;
+            }
+
+            .feature-request-examples {
+                padding: 0.75rem;
+            }
+
+            .nav-link {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <h1>Suggest Improvements</h1>
+            <div class="header-controls">
+                <nav class="header-nav">
+                    <a href="index.html" class="nav-link">Collection</a>
+                    <a href="how-to-use.html" class="nav-link">How to Use</a>
+                </nav>
+                <div class="theme-controls">
+                    <span class="theme-label">Theme</span>
+                    <button id="theme-switcher" class="theme-switcher" type="button" role="switch" aria-checked="false" aria-label="Toggle Theme">
+                        <span class="theme-switcher__icon" aria-hidden="true"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <a href="index.html" class="back-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m12 19-7-7 7-7"/>
+                <path d="M19 12H5"/>
+            </svg>
+            Back to Collection
+        </a>
+
+        <div class="suggestion-section">
+            <h2>Help Us Improve</h2>
+            <p>Your feedback is valuable! Whether you've found a bug, have an idea for a new bookmarklet, or want to suggest improvements to existing ones, we'd love to hear from you.</p>
+        </div>
+
+        <div class="suggestion-section">
+            <h2>Submit Your Suggestion</h2>
+            <form id="suggestion-form">
+                <div class="form-group">
+                    <label>What type of suggestion do you have?</label>
+                    <div class="category-grid">
+                        <label class="category-card">
+                            <input type="radio" name="category" value="bug-report" required>
+                            <h3><span class="icon">🐛</span> Bug Report</h3>
+                            <p>Something isn't working as expected</p>
+                        </label>
+                        
+                        <label class="category-card">
+                            <input type="radio" name="category" value="new-feature" required>
+                            <h3><span class="icon">✨</span> New Feature</h3>
+                            <p>Request a new bookmarklet or functionality</p>
+                        </label>
+                        
+                        <label class="category-card">
+                            <input type="radio" name="category" value="improvement" required>
+                            <h3><span class="icon">🔧</span> Improvement</h3>
+                            <p>Enhance existing bookmarklets or UI</p>
+                        </label>
+                        
+                        <label class="category-card">
+                            <input type="radio" name="category" value="documentation" required>
+                            <h3><span class="icon">📚</span> Documentation</h3>
+                            <p>Improve guides, instructions, or help content</p>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="title">Title *</label>
+                    <input type="text" id="title" name="title" required placeholder="Brief description of your suggestion">
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Detailed Description *</label>
+                    <textarea id="description" name="description" required placeholder="Please provide as much detail as possible..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="browser">Browser & Version (if relevant)</label>
+                    <input type="text" id="browser" name="browser" placeholder="e.g., Chrome 120, Firefox 121, Safari 17">
+                </div>
+
+                <div class="form-group">
+                    <label for="steps">Steps to Reproduce (for bugs)</label>
+                    <textarea id="steps" name="steps" placeholder="1. Go to...&#10;2. Click on...&#10;3. See error..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="contact">Contact Email (optional)</label>
+                    <input type="email" id="contact" name="contact" placeholder="your.email@example.com">
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m22 2-7 20-4-9-9-4Z"/>
+                        <path d="M22 2 11 13"/>
+                    </svg>
+                    Submit Suggestion
+                </button>
+            </form>
+
+            <div id="success-message" class="success-message">
+                <strong>Thank you!</strong> Your suggestion has been recorded. We appreciate your feedback and will review it soon.
+            </div>
+        </div>
+
+        <div class="suggestion-section">
+            <h2>Feature Request Ideas</h2>
+            <p>Not sure what to suggest? Here are some areas where we're looking for input:</p>
+            
+            <div class="feature-request-examples">
+                <h4>New Bookmarklet Ideas</h4>
+                <ul>
+                    <li>Social media tools (download images, clean URLs, etc.)</li>
+                    <li>Accessibility helpers (font size, contrast, screen reader support)</li>
+                    <li>Developer utilities (performance analysis, SEO checks)</li>
+                    <li>Content extraction tools (save articles, export data)</li>
+                    <li>Privacy tools (clear tracking, block scripts)</li>
+                </ul>
+            </div>
+
+            <div class="feature-request-examples">
+                <h4>UI/UX Improvements</h4>
+                <ul>
+                    <li>Better mobile experience</li>
+                    <li>Search and filtering capabilities</li>
+                    <li>Bookmarklet categories and organization</li>
+                    <li>Usage statistics and favorites</li>
+                    <li>Export/import functionality</li>
+                </ul>
+            </div>
+        </div>
+
+        
+        
+        <div class="suggestion-section">
+            <h2>Contribution Guidelines</h2>
+            <h3>For Bug Reports:</h3>
+            <ul>
+                <li>Include your browser name and version</li>
+                <li>Describe the expected vs. actual behavior</li>
+                <li>Provide steps to reproduce the issue</li>
+                <li>Include any error messages from the browser console</li>
+            </ul>
+            
+            <h3>For Feature Requests:</h3>
+            <ul>
+                <li>Explain the problem your feature would solve</li>
+                <li>Describe how you envision the feature working</li>
+                <li>Consider the security and privacy implications</li>
+                <li>Think about how it would work across different browsers</li>
+            </ul>
+            
+            <h3>For Code Contributions:</h3>
+            <ul>
+                <li>Follow existing code style and patterns</li>
+                <li>Test your bookmarklets across multiple browsers</li>
+                <li>Consider edge cases and error handling</li>
+                <li>Provide clear documentation and examples</li>
+            </ul>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="install-steps">
+                <p>Thank you for helping make this collection better! Check out our <a href="how-to-use.html" style="color: var(--accent);">How to Use</a> guide for installation instructions.</p>
+                <p style="text-align: center; margin-top: 1rem; color: var(--muted); font-size: 0.9rem;">Made by Samir G(unknown)</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Theme switcher functionality
+        const THEMES = ['light', 'dark', 'ocean', 'sunset', 'midnight'];
+        
+        function cycleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+            const currentIndex = THEMES.indexOf(currentTheme);
+            const nextTheme = THEMES[(currentIndex + 1) % THEMES.length];
+            setTheme(nextTheme);
+        }
+
+        function setTheme(theme) {
+            if (!THEMES.includes(theme)) {
+                theme = 'dark';
+            }
+            
+            localStorage.setItem('bookmarklet-theme', theme);
+            
+            const themeSwitcher = document.getElementById('theme-switcher');
+            if (themeSwitcher) {
+                themeSwitcher.setAttribute('data-theme', theme);
+            }
+            
+            document.documentElement.classList.add('theme-transition');
+            document.documentElement.setAttribute('data-theme', theme);
+            document.documentElement.offsetHeight;
+            
+            setTimeout(() => {
+                document.documentElement.classList.remove('theme-transition');
+            }, 300);
+        }
+
+        // Category card selection
+        function initCategoryCards() {
+            const categoryCards = document.querySelectorAll('.category-card');
+            const radioInputs = document.querySelectorAll('.category-card input[type="radio"]');
+            
+            categoryCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const radio = card.querySelector('input[type="radio"]');
+                    radio.checked = true;
+                    
+                    // Update visual selection
+                    categoryCards.forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                });
+            });
+            
+            radioInputs.forEach(radio => {
+                radio.addEventListener('change', () => {
+                    categoryCards.forEach(c => c.classList.remove('selected'));
+                    radio.closest('.category-card').classList.add('selected');
+                });
+            });
+        }
+
+        // Discord webhook submission
+        async function sendToDiscord(data) {
+            const webhookUrl = 'https://discord.com/api/webhooks/1412777560982683749/YLZjzQgwxpyt0Zja8lCONS-Un5_dGje1xIxuWYc7MVrAhKJ6mRMp9DJ1QVecJgGCZcLc';
+            
+            console.log('Sending to Discord:', data); // Debug log
+            
+            // Get category emoji and name
+            const categoryMap = {
+                'bug-report': { emoji: '🐛', name: 'Bug Report', color: 0xE74C3C },
+                'new-feature': { emoji: '✨', name: 'New Feature', color: 0x2ECC71 },
+                'improvement': { emoji: '🔧', name: 'Improvement', color: 0x3498DB },
+                'documentation': { emoji: '📚', name: 'Documentation', color: 0xF39C12 }
+            };
+            
+            const category = categoryMap[data.category] || { emoji: '📝', name: 'General', color: 0x95A5A6 };
+            
+            // Create a beautiful embed
+            const embed = {
+                title: `${category.emoji} ${category.name}`,
+                description: `**${data.title}**\n\n${data.description}`,
+                color: category.color,
+                fields: [],
+                footer: {
+                    text: "Bookmarklet Collection Feedback",
+                    icon_url: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f516.png"
+                },
+                timestamp: new Date().toISOString(),
+                thumbnail: {
+                    url: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4dd.png"
+                }
+            };
+            
+            // Add fields with better formatting
+            if (data.browser && data.browser.trim()) {
+                embed.fields.push({
+                    name: "🌐 Browser & Version",
+                    value: `\`${data.browser}\``,
+                    inline: true
+                });
+            }
+            
+            if (data.steps && data.steps.trim()) {
+                const steps = data.steps.length > 1000 ? data.steps.substring(0, 997) + '...' : data.steps;
+                embed.fields.push({
+                    name: "🔄 Steps to Reproduce",
+                    value: `\`\`\`\n${steps}\n\`\`\``,
+                    inline: false
+                });
+            }
+            
+            if (data.contact && data.contact.trim()) {
+                embed.fields.push({
+                    name: "📧 Contact",
+                    value: `\`${data.contact}\``,
+                    inline: true
+                });
+            }
+            
+            // Add submission info
+            embed.fields.push({
+                name: "📅 Submitted",
+                value: `<t:${Math.floor(Date.now() / 1000)}:R>`,
+                inline: true
+            });
+            
+            embed.fields.push({
+                name: "🔗 Source",
+                value: `[View Collection](${window.location.origin})`,
+                inline: true
+            });
+            
+            const payload = {
+                username: "Bookmarklet Feedback Bot",
+                avatar_url: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f916.png",
+                content: `## 📬 New ${category.name} Received!`,
+                embeds: [embed]
+            };
+            
+            console.log('Payload:', JSON.stringify(payload, null, 2)); // Debug log
+            
+            try {
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                console.log('Response status:', response.status); // Debug log
+                console.log('Response headers:', response.headers); // Debug log
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Discord API Error:', errorText);
+                    throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+                }
+                
+                const responseData = await response.text();
+                console.log('Discord response:', responseData); // Debug log
+                
+                return true;
+            } catch (error) {
+                console.error('Failed to send to Discord:', error);
+                console.error('Error details:', error.message);
+                return false;
+            }
+        }
+
+        // Form submission
+        function initForm() {
+            const form = document.getElementById('suggestion-form');
+            const successMessage = document.getElementById('success-message');
+            const submitBtn = form.querySelector('.submit-btn');
+            
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                // Disable submit button and show loading state
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite;">
+                        <path d="M21 12a9 9 0 11-6.219-8.56"/>
+                    </svg>
+                    Sending...
+                `;
+                
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData.entries());
+                
+                // Send to Discord
+                const success = await sendToDiscord(data);
+                
+                // Re-enable submit button
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m22 2-7 20-4-9-9-4Z"/>
+                        <path d="M22 2 11 13"/>
+                    </svg>
+                    Submit Suggestion
+                `;
+                
+                if (success) {
+                    // Store in localStorage as backup
+                    const suggestions = JSON.parse(localStorage.getItem('bookmarklet-suggestions') || '[]');
+                    suggestions.push({
+                        ...data,
+                        timestamp: new Date().toISOString(),
+                        id: Date.now(),
+                        sent: true
+                    });
+                    localStorage.setItem('bookmarklet-suggestions', JSON.stringify(suggestions));
+                    
+                    // Show success message
+                    successMessage.innerHTML = '<strong>Thank you!</strong> Your suggestion has been sent successfully. We appreciate your feedback and will review it soon.';
+                    successMessage.classList.add('show');
+                    form.reset();
+                    document.querySelectorAll('.category-card').forEach(c => c.classList.remove('selected'));
+                } else {
+                    // Show error message
+                    successMessage.innerHTML = '<strong>Oops!</strong> There was an error sending your suggestion. Please try again later or contact us directly.';
+                    successMessage.style.background = 'rgba(244, 67, 54, 0.1)';
+                    successMessage.style.borderColor = '#f44336';
+                    successMessage.style.color = '#f44336';
+                    successMessage.classList.add('show');
+                }
+                
+                // Hide message after 5 seconds
+                setTimeout(() => {
+                    successMessage.classList.remove('show');
+                    // Reset error styling
+                    successMessage.style.background = 'rgba(76, 175, 80, 0.1)';
+                    successMessage.style.borderColor = '#4caf50';
+                    successMessage.style.color = '#4caf50';
+                }, 5000);
+                
+                // Scroll to success message
+                successMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+        }
+
+        // Share functionality
+        function shareCollection() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Bookmarklet Collection',
+                    text: 'Check out this awesome collection of useful bookmarklets!',
+                    url: window.location.origin
+                });
+            } else {
+                // Fallback: copy to clipboard
+                const url = window.location.origin;
+                navigator.clipboard.writeText(url).then(() => {
+                    alert('Collection URL copied to clipboard!');
+                }).catch(() => {
+                    prompt('Copy this URL to share:', url);
+                });
+            }
+        }
+
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load saved theme
+            const savedTheme = localStorage.getItem('bookmarklet-theme') || 'dark';
+            setTheme(savedTheme);
+            
+            // Bind theme switcher
+            const themeSwitcher = document.getElementById('theme-switcher');
+            if (themeSwitcher) {
+                themeSwitcher.addEventListener('click', cycleTheme);
+            }
+            
+            // Initialize category cards and form
+            initCategoryCards();
+            initForm();
+        });
+
+        // Make shareCollection available globally
+        window.shareCollection = shareCollection;
+    </script>
+</body>
+</html>

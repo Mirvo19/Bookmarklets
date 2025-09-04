@@ -57,9 +57,16 @@
         <div class="container">
             <h1>Bookmarklet Collection</h1>
             <div class="header-controls">
-                <button id="theme-switcher" class="theme-switcher" type="button" role="switch" aria-checked="false" aria-label="Toggle Theme">
-                    <span class="theme-switcher__icon" aria-hidden="true"></span>
-                </button>
+                <nav class="header-nav">
+                    <a href="how-to-use.html" class="nav-link">How to Use</a>
+                    <a href="suggest-improvements.html" class="nav-link">Suggest Improvements</a>
+                </nav>
+                <div class="theme-controls">
+                    <span class="theme-label">Theme</span>
+                    <button id="theme-switcher" class="theme-switcher" type="button" role="switch" aria-checked="false" aria-label="Toggle Theme">
+                        <span class="theme-switcher__icon" aria-hidden="true"></span>
+                    </button>
+                </div>
             </div>
         </div>
     </header>
@@ -78,6 +85,7 @@
             <div class="theme-info">
                 <p>Themes: <span id="theme-list">light, dark, sam</span></p>
             </div>
+            <p style="text-align: center; margin-top: 1rem; color: var(--muted); font-size: 0.9rem;">Made by Samir G(unknown)</p>
         </div>
     </footer>
 
