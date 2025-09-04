@@ -495,9 +495,9 @@
         // --- THEME MANAGEMENT ---
         const THEMES = ['light', 'dark', 'flamingo', 'ocean', 'sunset', 'midnight'];
         
-        // Set sunset theme on initial load if no theme is set
+        // Set flamingo theme on initial load if no theme is set
         if (!localStorage.getItem(LOCAL_KEYS.theme)) {
-            setTheme('sunset');
+            setTheme('flamingo');
         }
         
         function cycleTheme() {

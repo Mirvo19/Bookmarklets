@@ -236,50 +236,6 @@
             animation: slideIn 0.3s ease;
         }
 
-        .error-message {
-            background: rgba(244, 67, 54, 0.1);
-            border: 2px solid #f44336;
-            color: #f44336;
-            padding: 1rem;
-            border-radius: 8px;
-            margin: 1rem 0;
-            display: none;
-            font-weight: 500;
-        }
-
-        .error-message.show {
-            display: block;
-            animation: slideIn 0.3s ease;
-        }
-
-        .form-group.error input,
-        .form-group.error textarea {
-            border-color: #f44336;
-            background: rgba(244, 67, 54, 0.05);
-        }
-
-        .form-group.error label {
-            color: #f44336;
-        }
-
-        .error-text {
-            color: #f44336;
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-            display: none;
-        }
-
-        .error-text.show {
-            display: block;
-        }
-
-        .category-grid.error {
-            border: 2px solid #f44336;
-            border-radius: 8px;
-            padding: 1rem;
-            background: rgba(244, 67, 54, 0.05);
-        }
-
         @keyframes slideIn {
             from {
                 opacity: 0;
@@ -472,9 +428,9 @@
         <div class="suggestion-section">
             <h2>Submit Your Suggestion</h2>
             <form id="suggestion-form">
-                <div class="form-group" id="category-group">
-                    <label>What type of suggestion do you have? *</label>
-                    <div class="category-grid" id="category-grid">
+                <div class="form-group">
+                    <label>What type of suggestion do you have?</label>
+                    <div class="category-grid">
                         <label class="category-card">
                             <input type="radio" name="category" value="bug-report" required>
                             <h3><span class="icon">🐛</span> Bug Report</h3>
@@ -499,19 +455,16 @@
                             <p>Improve guides, instructions, or help content</p>
                         </label>
                     </div>
-                    <div class="error-text" id="category-error">Please select a suggestion type</div>
                 </div>
 
-                <div class="form-group" id="title-group">
+                <div class="form-group">
                     <label for="title">Title *</label>
                     <input type="text" id="title" name="title" required placeholder="Brief description of your suggestion">
-                    <div class="error-text" id="title-error">Please enter a title for your suggestion</div>
                 </div>
 
-                <div class="form-group" id="description-group">
+                <div class="form-group">
                     <label for="description">Detailed Description *</label>
                     <textarea id="description" name="description" required placeholder="Please provide as much detail as possible..."></textarea>
-                    <div class="error-text" id="description-error">Please provide a detailed description</div>
                 </div>
 
                 <div class="form-group">
@@ -536,7 +489,7 @@
                     </svg>
                     Submit Suggestion
                 </button>
-            </form>
+                </form>
 
             <div id="success-message" class="success-message">
                 <strong>Thank you!</strong> Your suggestion has been recorded. We appreciate your feedback and will review it soon.
@@ -611,7 +564,7 @@
 
     <script>
         // Theme switcher functionality
-        const THEMES = ['light', 'dark', 'flamingo', 'ocean', 'sunset', 'midnight'];
+        const THEMES = ['light', 'dark', 'ocean', 'sunset', 'midnight'];
         
         function cycleTheme() {
             const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
@@ -774,92 +727,14 @@
             }
         }
 
-        // Form validation
-        function validateForm() {
-            let isValid = true;
-            
-            // Clear previous errors
-            document.querySelectorAll('.form-group').forEach(group => {
-                group.classList.remove('error');
-            });
-            document.querySelectorAll('.error-text').forEach(error => {
-                error.classList.remove('show');
-            });
-            document.getElementById('category-grid').classList.remove('error');
-            
-            // Check category selection
-            const categorySelected = document.querySelector('input[name="category"]:checked');
-            if (!categorySelected) {
-                document.getElementById('category-group').classList.add('error');
-                document.getElementById('category-error').classList.add('show');
-                document.getElementById('category-grid').classList.add('error');
-                isValid = false;
-            }
-            
-            // Check title
-            const title = document.getElementById('title').value.trim();
-            if (!title) {
-                document.getElementById('title-group').classList.add('error');
-                document.getElementById('title-error').classList.add('show');
-                isValid = false;
-            }
-            
-            // Check description
-            const description = document.getElementById('description').value.trim();
-            if (!description) {
-                document.getElementById('description-group').classList.add('error');
-                document.getElementById('description-error').classList.add('show');
-                isValid = false;
-            }
-            
-            return isValid;
-        }
-
         // Form submission
         function initForm() {
             const form = document.getElementById('suggestion-form');
             const successMessage = document.getElementById('success-message');
             const submitBtn = form.querySelector('.submit-btn');
             
-            // Add real-time validation
-            const titleInput = document.getElementById('title');
-            const descriptionInput = document.getElementById('description');
-            const categoryInputs = document.querySelectorAll('input[name="category"]');
-            
-            titleInput.addEventListener('input', () => {
-                if (titleInput.value.trim()) {
-                    document.getElementById('title-group').classList.remove('error');
-                    document.getElementById('title-error').classList.remove('show');
-                }
-            });
-            
-            descriptionInput.addEventListener('input', () => {
-                if (descriptionInput.value.trim()) {
-                    document.getElementById('description-group').classList.remove('error');
-                    document.getElementById('description-error').classList.remove('show');
-                }
-            });
-            
-            categoryInputs.forEach(input => {
-                input.addEventListener('change', () => {
-                    document.getElementById('category-group').classList.remove('error');
-                    document.getElementById('category-error').classList.remove('show');
-                    document.getElementById('category-grid').classList.remove('error');
-                });
-            });
-            
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                
-                // Validate form
-                if (!validateForm()) {
-                    // Scroll to first error
-                    const firstError = document.querySelector('.form-group.error');
-                    if (firstError) {
-                        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }
-                    return;
-                }
                 
                 // Disable submit button and show loading state
                 submitBtn.disabled = true;
