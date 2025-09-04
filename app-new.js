@@ -8,8 +8,8 @@
         usage: (slug) => `bookmarklet-usage-${slug}`
     };
 
-    // Set sunset theme by default if not set
-    const savedTheme = localStorage.getItem(LOCAL_KEYS.theme) || 'sunset';
+    // Set flamingo theme by default if not set
+    const savedTheme = localStorage.getItem(LOCAL_KEYS.theme) || 'flamingo';
     // Don't set it directly here, let the init function handle it
     // to ensure all theme-related initialization happens in one place
 
@@ -455,11 +455,11 @@
             bindEvents();
             
             // Set initial theme
-            let savedTheme = localStorage.getItem(LOCAL_KEYS.theme) || 'dark';
+            let savedTheme = localStorage.getItem(LOCAL_KEYS.theme) || 'flamingo';
             
-            // Ensure the theme is valid, fallback to dark if not
+            // Ensure the theme is valid, fallback to flamingo if not
             if (!THEMES.includes(savedTheme)) {
-                savedTheme = 'dark';
+                savedTheme = 'flamingo';
                 localStorage.setItem(LOCAL_KEYS.theme, savedTheme);
             }
             
@@ -493,7 +493,7 @@
         }
 
         // --- THEME MANAGEMENT ---
-        const THEMES = ['light', 'dark', 'ocean', 'sunset', 'midnight'];
+        const THEMES = ['light', 'dark', 'flamingo', 'ocean', 'sunset', 'midnight'];
         
         // Set sunset theme on initial load if no theme is set
         if (!localStorage.getItem(LOCAL_KEYS.theme)) {
