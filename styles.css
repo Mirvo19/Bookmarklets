@@ -1304,6 +1304,14 @@ pre, code, pre * {
     border-bottom: 1px solid rgba(26, 26, 26, 0.2);
 }
 
+[data-theme="flamingo"] .description-card p {
+    color: #1a1a1a;
+}
+
+[data-theme="flamingo"] .description-card .close-btn {
+    color: #1a1a1a;
+}
+
 [data-theme="flamingo"] .toast {
     background: linear-gradient(135deg, var(--accent), var(--accent-2));
     border: 1px solid rgba(26, 26, 26, 0.2);
@@ -1313,6 +1321,79 @@ pre, code, pre * {
 [data-theme="flamingo"] .toast::after {
     background: #1a1a1a;
     width: 3px;
+}
+
+/* Flamingo theme syntax highlighting */
+[data-theme="flamingo"] .token.comment,
+[data-theme="flamingo"] .token.prolog,
+[data-theme="flamingo"] .token.doctype,
+[data-theme="flamingo"] .token.cdata {
+    color: #6b7280;
+}
+
+[data-theme="flamingo"] .token.punctuation {
+    color: #374151;
+}
+
+[data-theme="flamingo"] .token.property,
+[data-theme="flamingo"] .token.tag,
+[data-theme="flamingo"] .token.boolean,
+[data-theme="flamingo"] .token.number,
+[data-theme="flamingo"] .token.constant,
+[data-theme="flamingo"] .token.symbol,
+[data-theme="flamingo"] .token.deleted {
+    color: #059669;
+}
+
+[data-theme="flamingo"] .token.selector,
+[data-theme="flamingo"] .token.attr-name,
+[data-theme="flamingo"] .token.string,
+[data-theme="flamingo"] .token.char,
+[data-theme="flamingo"] .token.builtin,
+[data-theme="flamingo"] .token.inserted {
+    color: #dc2626;
+}
+
+[data-theme="flamingo"] .token.operator,
+[data-theme="flamingo"] .token.entity,
+[data-theme="flamingo"] .token.url,
+[data-theme="flamingo"] .language-css .token.string,
+[data-theme="flamingo"] .style .token.string {
+    color: #374151;
+}
+
+[data-theme="flamingo"] .token.atrule,
+[data-theme="flamingo"] .token.attr-value,
+[data-theme="flamingo"] .token.keyword {
+    color: #7c3aed;
+}
+
+[data-theme="flamingo"] .token.function,
+[data-theme="flamingo"] .token.class-name {
+    color: #ea580c;
+}
+
+[data-theme="flamingo"] .token.regex,
+[data-theme="flamingo"] .token.important,
+[data-theme="flamingo"] .token.variable {
+    color: #be185d;
+}
+
+[data-theme="flamingo"] .editor__code .token-keyword { 
+    color: #7c3aed; 
+}
+
+[data-theme="flamingo"] .editor__code .token-string { 
+    color: #dc2626; 
+}
+
+[data-theme="flamingo"] .editor__code .token-number { 
+    color: #059669; 
+}
+
+[data-theme="flamingo"] .editor__code .token-comment { 
+    color: #6b7280; 
+    font-style: italic; 
 }
 
 @media (max-width: 600px) {
