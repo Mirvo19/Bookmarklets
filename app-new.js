@@ -546,7 +546,10 @@
         function renderCards() {
             const fragment = document.createDocumentFragment();
             Object.entries(SNIPPETS).forEach(([slug, data]) => {
-                fragment.appendChild(createCardElement(slug, data));
+                const card = createCardElement(slug, data);
+                if (card) {
+                    fragment.appendChild(card);
+                }
             });
             dom.appContainer.innerHTML = '';
             dom.appContainer.appendChild(fragment);
@@ -564,15 +567,12 @@
             const card = document.createElement('div');
             card.className = 'bookmarklet-card';
             card.dataset.slug = slug;
+            card.dataset.title = snippet.title; // For the tooltip
             card.style.cursor = 'default';
+            card.style.position = 'relative';
             
             // Store snippet data on the card element
             card._snippetData = snippet;
-            
-            // Add hover-to-copy tooltip
-            const tooltip = document.createElement('div');
-            tooltip.className = 'copy-tooltip';
-            tooltip.textContent = 'Click to copy';
             
             // Add drag handle for drag-to-bookmark
             const dragHandle = document.createElement('div');
@@ -620,6 +620,48 @@
                     </div>
                 </div>
             `;
+
+            // Add easter egg name element at the bottom of the card (append AFTER innerHTML to avoid removal)
+            // Add made-for text to the card header with gradient
+            const madeFor = document.createElement('div');
+            madeFor.className = 'made-for';
+            madeFor.innerHTML = 'Made for: <strong>croissants_hotchocolate</strong> <span style="opacity:0.8">(a.k.a. Sameeha)</span>';
+            madeFor.style.position = 'absolute';
+            madeFor.style.top = '0';
+            madeFor.style.left = '0';
+            madeFor.style.right = '0';
+            madeFor.style.padding = '6px 0';
+            madeFor.style.textAlign = 'center';
+            madeFor.style.background = 'linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.3) 20%, rgba(0,0,0,0.3) 80%, rgba(0,0,0,0) 100%)';
+            madeFor.style.color = 'white';
+            madeFor.style.fontSize = '12px';
+            madeFor.style.fontWeight = '500';
+            madeFor.style.textShadow = '0 1px 2px rgba(0,0,0,0.5)';
+            madeFor.style.opacity = '0';
+            madeFor.style.transition = 'opacity 0.4s ease';
+            madeFor.style.pointerEvents = 'none';
+            // Add made-for text to the card header
+            const cardHeader = card.querySelector('.card-header');
+            if (cardHeader) {
+                cardHeader.style.position = 'relative';
+                cardHeader.appendChild(madeFor);
+
+                // Add hover timer for made-for text (6 seconds)
+                let hoverTimer;
+                card.addEventListener('mouseenter', () => {
+                    if (hoverTimer) clearTimeout(hoverTimer);
+                    hoverTimer = setTimeout(() => {
+                        madeFor.style.opacity = '1';
+                    }, 6000); // 6 second delay
+                });
+                card.addEventListener('mouseleave', () => {
+                    if (hoverTimer) {
+                        clearTimeout(hoverTimer);
+                        hoverTimer = null;
+                    }
+                    madeFor.style.opacity = '0';
+                });
+            }
 
             // Add event listeners
             const copyButton = card.querySelector('.copy-button');
@@ -723,6 +765,114 @@
             });
 
             return card;
+        }
+
+        // --- TILE RENDERING (replaces cards) ---
+        function createTileElement(slug, data) {
+            const snippet = data;
+            if (!snippet) return null;
+
+            const code = snippet.code;
+            const minifiedCode = minifyForHref(code);
+            
+            // Create tile element
+            const tile = document.createElement('div');
+            tile.className = 'bookmarklet-tile';
+            tile.dataset.slug = slug;
+            tile.style.position = 'relative';
+            tile.style.overflow = 'visible';
+            
+            // Create tile content
+            tile.innerHTML = `
+                <div class="tile-header">
+                    <div>
+                        <h3 class="tile-title">${escapeHtml(snippet.title)}</h3>
+                        <div class="tile-category">${escapeHtml(snippet.category || '')}</div>
+                    </div>
+                    <div class="made-for" style="position: absolute; top: 0; left: 0; right: 0; padding: 6px 0; text-align: center; background: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.3) 20%, rgba(0,0,0,0.3) 80%, rgba(0,0,0,0) 100%); color: white; font-size: 12px; font-weight: 500; text-shadow: 0 1px 2px rgba(0,0,0,0.5); opacity: 0; transition: opacity 0.4s ease; pointer-events: none;">
+                        Made for: <strong>croissants_hotchocolate</strong> <span style="opacity:0.8">(a.k.a. Sameeha)</span>
+                    </div>
+                </div>
+                <p class="tile-desc">${escapeHtml(snippet.desc || 'No description available.')}</p>
+            `;
+
+            // Add hover timer for made-for text (6 seconds)
+            const madeFor = tile.querySelector('.made-for');
+            let hoverTimer;
+            
+            tile.addEventListener('mouseenter', () => {
+                clearTimeout(hoverTimer);
+                hoverTimer = setTimeout(() => {
+                    madeFor.style.opacity = '1';
+                }, 6000); // 6 second delay
+            });
+
+            tile.addEventListener('mouseleave', () => {
+                clearTimeout(hoverTimer);
+                madeFor.style.opacity = '0';
+            });
+
+            // Add drag handle
+            const dragHandle = document.createElement('div');
+            dragHandle.className = 'drag-handle';
+            dragHandle.innerHTML = '⋮⋮';
+            dragHandle.draggable = true;
+            dragHandle.title = 'Drag to bookmarks bar';
+            tile.querySelector('.tile-header').appendChild(dragHandle);
+            
+            // Drag and drop functionality
+            dragHandle.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', minifiedCode);
+                e.dataTransfer.effectAllowed = 'copy';
+                const helper = document.getElementById('drag-helper');
+                if (helper) {
+                    helper.style.display = 'block';
+                    e.dataTransfer.setDragImage(helper, 0, 0);
+                }
+            });
+            
+            dragHandle.addEventListener('dragend', () => {
+                const helper = document.getElementById('drag-helper');
+                if (helper) helper.style.display = 'none';
+            });
+
+            // Add button event listeners
+            const runButton = tile.querySelector('.tile-run-button');
+            const infoButton = tile.querySelector('.tile-info-button');
+            const copyButton = tile.querySelector('.tile-copy-button');
+            
+            if (runButton) {
+                runButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    runSnippet(code);
+                });
+            }
+            
+            if (infoButton) {
+                infoButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    createDescriptionModal(snippet.title, snippet.desc, code);
+                });
+            }
+            
+            if (copyButton) {
+                copyButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    copyToClipboard(minifiedCode)
+                        .then(() => {
+                            updateUsage(slug, { copy: true });
+                            showCopyFeedback();
+                            copyButton.classList.add('pulse');
+                            setTimeout(() => copyButton.classList.remove('pulse'), 1000);
+                        })
+                        .catch(err => {
+                            console.error('Failed to copy:', err);
+                            showCopyFeedback('Failed to copy to clipboard', 'error');
+                        });
+                });
+            }
+
+            return tile;
         }
 
         // --- MODAL & FEEDBACK ---

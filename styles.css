@@ -435,45 +435,29 @@ body {
     background-clip: padding-box;
     overflow: visible;
     background: var(--bg-2);
+    padding-bottom: 0;
+    margin-bottom: 10px;
 }
 
-.bookmarklet-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border-radius: 8px;
-    padding: 2px;
-    background: linear-gradient(135deg, #4ec9b0, #647eff, #9c27b0);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    opacity: 0;
-    transition: opacity 0.4s ease-out;
-    pointer-events: none;
+/* Gradient border removed as requested */
+
+.bookmarklet-card {
+    transition: all 0.3s var(--ease-out-quad);
+    position: relative;
+    z-index: 1;
+    overflow: visible;
+    min-height: 100px;
 }
 
 .bookmarklet-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-    cursor: default;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
     z-index: 10;
+    border-color: rgba(0, 0, 0, 0.2);
 }
 
-.bookmarklet-card:hover::before {
-    opacity: 1;
-    animation: gradientBorder 2s linear infinite;
-    background-size: 200% 200%;
-}
-
-@keyframes gradientBorder {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
+/* Gradient border animation removed as requested */
 
 .bookmarklet-card:active {
     transform: translateY(-1px);
@@ -557,10 +541,17 @@ pre, code, pre * {
     }
 }
 
+.action-button {
+    transition: all 0.3s var(--ease-out-quad);
+    position: relative;
+    overflow: hidden;
+}
+
 .action-button:hover {
     background-color: var(--accent-hover);
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    z-index: 2;
 }
 
 .action-button:active {
@@ -583,11 +574,16 @@ pre, code, pre * {
     background-color: var(--accent-2);
     color: var(--accent);
     border: 1px solid var(--accent);
+    transition: all 0.3s var(--ease-out-quad);
+    position: relative;
+    overflow: hidden;
 }
 
 .copy-button:hover {
     background-color: var(--accent);
     color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .info-button {
@@ -599,22 +595,56 @@ pre, code, pre * {
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.4rem;
     font-size: 0.85rem;
-    transition: all 0.2s;
+    transition: all 0.3s var(--ease-out-quad);
     white-space: nowrap;
     font-weight: 500;
+    position: relative;
+    overflow: hidden;
 }
 
 .info-button:hover {
     background: rgba(var(--accent-rgb), 0.2);
     border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .info-button svg {
     width: 16px;
     height: 16px;
     flex-shrink: 0;
+}
+
+/* Delayed tooltip */
+.bookmarklet-card {
+    position: relative;
+}
+
+.bookmarklet-card::before {
+    content: attr(data-title);
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: var(--text);
+    color: var(--bg);
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.2s ease;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.bookmarklet-card:hover::before {
+    transition-delay: 5s;
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
 }
 
 /* Ripple animation on copy */
@@ -1182,8 +1212,8 @@ pre, code, pre * {
 }
 
 [data-theme="flamingo"] .bookmarklet-card:hover {
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(236, 72, 153, 0.2);
-    border-color: rgba(26, 26, 26, 0.4);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(236, 72, 153, 0.25);
+    border-color: rgba(236, 72, 153, 0.3);
     transform: translateY(-4px);
 }
 
